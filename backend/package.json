@@ -1,18 +1,17 @@
 {
-  "name": "backend",
+  "name": "nexadesk-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "NexaDesk AI customer support backend",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Tiana Kayemba",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.94.0",
-    "better": "^0.1.0",
     "better-sqlite3": "^12.9.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",

@@ -27,7 +27,7 @@ Drop NexaDesk onto any website and it will:
 
 | Layer | Technology |
 |---|---|
-| AI | Anthropic Claude API (claude-sonnet-4-5) |
+| AI | Anthropic Claude API (claude-sonnet-4-6) |
 | Backend | Node.js, Express |
 | Database | SQLite (via better-sqlite3) |
 | Knowledge Base | JSON + full-context Claude injection |
