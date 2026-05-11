@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NexaDesk — AI Customer Support Platform</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand:       #667eea;
+  --brand2:      #764ba2;
+  --brand-light: #eef0ff;
+  --text:        #1a1a2e;
+  --muted:       #6b7280;
+  --border:      #e5e7eb;
+  --bg:          #f8f9ff;
+  --white:       #ffffff;
+  --success:     #10b981;
+  --danger:      #ef4444;
+  --radius:      16px;
+  --shadow:      0 8px 40px rgba(0,0,0,0.12);
+  --shadow-sm:   0 2px 12px rgba(0,0,0,0.07);
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg); color: var(--text); min-height: 100vh;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 1000;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 1.1rem; color: var(--text);
+  text-decoration: none;
+}
+.nav-logo .logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--brand), var(--brand2));
+  border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; font-size: 16px;
+}
+.nav-badge {
+  font-size: 10px; font-weight: 600; padding: 2px 8px;
+  background: var(--brand-light); color: var(--brand);
+  border-radius: 20px; letter-spacing: 0.3px;
+}
+.nav-right { display: flex; align-items: center; gap: 14px; }
+.nav-credit { font-size: 12px; color: var(--muted); }
+.nav-credit strong { color: var(--brand); }
+.btn-primary {
+  padding: 8px 18px; border-radius: 8px; border: none;
+  background: linear-gradient(135deg, var(--brand), var(--brand2));
+  color: white; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.15s, transform 0.15s;
+}
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-outline {
+  padding: 8px 18px; border-radius: 8px;
+  border: 1.5px solid var(--border); background: white;
+  color: var(--text); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: border-color 0.15s, color 0.15s;
+}
+.btn-outline:hover { border-color: var(--brand); color: var(--brand); }
+
+/* ── HERO ── */
+.hero {
+  text-align: center; padding: 72px 20px 52px;
+  max-width: 680px; margin: 0 auto;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 14px; border-radius: 20px;
+  background: var(--brand-light); color: var(--brand);
+  font-size: 12px; font-weight: 600; margin-bottom: 20px;
+  letter-spacing: 0.3px;
+}
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.15;
+  background: linear-gradient(135deg, var(--text) 0%, var(--brand2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 16px;
+}
+.hero p {
+  font-size: 1.05rem; color: var(--muted); line-height: 1.7; margin-bottom: 32px;
+}
+.hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ── WHAT IT DOES ── */
+.what-strip {
+  display: flex; justify-content: center;
+  max-width: 800px; margin: 0 auto 60px;
+  background: white; border-radius: var(--radius);
+  box-shadow: var(--shadow-sm); overflow: hidden;
+  border: 1px solid var(--border);
+}
+.what-item {
+  flex: 1; padding: 20px 16px; text-align: center;
+  border-right: 1px solid var(--border);
+}
+.what-item:last-child { border-right: none; }
+.what-icon { font-size: 22px; margin-bottom: 8px; }
+.what-item h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.what-item p  { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+/* ── FEATURES ── */
+.features-section {
+  max-width: 920px; margin: 0 auto 64px; padding: 0 20px;
+}
+.section-label {
+  text-align: center; font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--brand); margin-bottom: 10px;
+}
+.section-title {
+  text-align: center; font-size: 1.6rem; font-weight: 800; margin-bottom: 8px;
+}
+.section-sub {
+  text-align: center; color: var(--muted); font-size: 0.95rem; margin-bottom: 40px;
+}
+.features-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+.feature-card {
+  background: white; border-radius: var(--radius);
+  padding: 24px; border: 1px solid var(--border);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.feature-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+.feature-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 14px;
+}
+.feature-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.feature-card p  { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+
+/* ── DEMO SECTION ── */
+.demo-section {
+  max-width: 1100px; margin: 0 auto 80px; padding: 0 20px;
+}
+.demo-layout {
+  display: grid; grid-template-columns: 320px 1fr;
+  gap: 24px; align-items: start;
+}
+@media (max-width: 800px) { .demo-layout { grid-template-columns: 1fr; } }
+
+/* Customizer */
+.customizer {
+  background: white; border-radius: var(--radius);
+  border: 1px solid var(--border); overflow: hidden;
+  box-shadow: var(--shadow-sm); position: sticky; top: 76px;
+}
+.customizer-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.customizer-header h3 { font-size: 13px; font-weight: 700; }
+.customizer-header p  { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.customizer-body {
+  padding: 20px; display: flex; flex-direction: column; gap: 20px;
+}
+.field-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--muted); margin-bottom: 8px; display: block;
+}
+.field-input {
+  width: 100%; padding: 9px 12px; border-radius: 8px;
+  border: 1.5px solid var(--border); font-size: 13px;
+  font-family: inherit; outline: none; transition: border-color 0.2s;
+  background: var(--bg);
+}
+.field-input:focus { border-color: var(--brand); background: white; }
+
+.color-presets { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.color-preset {
+  width: 28px; height: 28px; border-radius: 50%;
+  cursor: pointer; border: 2px solid transparent;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.color-preset:hover  { transform: scale(1.15); }
+.color-preset.active { border-color: var(--text); }
+.color-row { display: flex; gap: 10px; align-items: center; }
+.color-row input[type=color] {
+  width: 38px; height: 38px; border-radius: 8px;
+  border: 1.5px solid var(--border); cursor: pointer;
+  padding: 2px; background: white;
+}
+.color-row span { font-size: 12px; color: var(--muted); }
+
+.logo-upload-area {
+  border: 2px dashed var(--border); border-radius: 10px;
+  padding: 16px; text-align: center; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative; overflow: hidden;
+}
+.logo-upload-area:hover { border-color: var(--brand); background: var(--brand-light); }
+.logo-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-icon { font-size: 24px; margin-bottom: 6px; }
+.logo-upload-area p { font-size: 11.5px; color: var(--muted); }
+.logo-upload-area p strong { color: var(--brand); }
+#logo-preview-wrap {
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; gap: 8px;
+}
+#logo-preview { max-width: 80px; max-height: 40px; object-fit: contain; border-radius: 6px; }
+.remove-logo {
+  font-size: 11px; color: var(--danger); cursor: pointer;
+  background: none; border: none; font-family: inherit;
+}
+
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.toggle-row span { font-size: 12.5px; color: var(--text); }
+.toggle { position: relative; width: 40px; height: 22px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0; background: #d1d5db;
+  border-radius: 22px; cursor: pointer; transition: background 0.2s;
+}
+.toggle-slider::before {
+  content: ''; position: absolute;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: white; left: 3px; top: 3px;
+  transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle input:checked + .toggle-slider { background: var(--brand); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+/* Demo preview */
+.demo-preview {
+  background: linear-gradient(135deg, rgba(102,126,234,0.08), rgba(118,75,162,0.08));
+  border-radius: var(--radius); border: 1px solid var(--border);
+  min-height: 600px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; padding: 20px;
+}
+.preview-label {
+  position: absolute; top: 16px; left: 16px;
+  background: white; border-radius: 8px; padding: 6px 12px;
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+}
+.preview-label::before {
+  content: ''; width: 7px; height: 7px;
+  background: var(--success); border-radius: 50%;
+}
+.preview-site-bg {
+  text-align: center; pointer-events: none; user-select: none;
+}
+.preview-site-bg .site-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.preview-site-bg h2 { font-size: 1.5rem; font-weight: 800; }
+.preview-site-bg p  { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
+
+/* Quick try bar */
+.quick-replies-bar {
+  position: absolute; bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  max-width: 90%;
+}
+.qr-btn {
+  padding: 6px 14px; border-radius: 20px;
+  border: 1.5px solid rgba(102,126,234,0.4);
+  background: white; color: var(--brand); font-size: 11px;
+  font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: all 0.15s; white-space: nowrap;
+}
+.qr-btn:hover { background: var(--brand); color: white; border-color: var(--brand); }
+.qr-btn.danger { border-color: rgba(239,68,68,0.4); color: var(--danger); }
+.qr-btn.danger:hover { background: var(--danger); color: white; border-color: var(--danger); }
+
+/* ── EMBEDDED WIDGET ── */
+#widget-container {
+  position: absolute; bottom: 80px; right: 20px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+}
+#chat-window {
+  width: 310px; height: 440px; background: white; border-radius: 16px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.16);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+#chat-window.hidden { display: none; }
+#chat-header {
+  padding: 13px 16px;
+  background: linear-gradient(135deg, var(--brand), var(--brand2));
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; transition: background 0.3s;
+}
+.hdr-info { display: flex; align-items: center; gap: 9px; }
+.hdr-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; overflow: hidden; flex-shrink: 0;
+}
+.hdr-avatar img { width: 100%; height: 100%; object-fit: contain; }
+.hdr-text h4 { font-size: 12.5px; font-weight: 700; color: white; }
+.hdr-text p  { font-size: 10px; color: rgba(255,255,255,0.8); margin-top: 1px; }
+.hdr-dot {
+  display: inline-block; width: 5px; height: 5px;
+  background: #4ade80; border-radius: 50%; margin-right: 3px;
+}
+.hdr-close {
+  background: none; border: none; color: rgba(255,255,255,0.75);
+  font-size: 20px; cursor: pointer; padding: 2px 5px; border-radius: 4px;
+  line-height: 1; transition: background 0.15s;
+}
+.hdr-close:hover { background: rgba(255,255,255,0.15); color: white; }
+#messages {
+  flex: 1; overflow-y: auto; padding: 12px 12px 6px;
+  display: flex; flex-direction: column; gap: 9px; background: #f8f9fb;
+}
+#messages::-webkit-scrollbar { width: 3px; }
+#messages::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+.msg-wrap { display: flex; flex-direction: column; }
+.msg-wrap.bot  { align-items: flex-start; }
+.msg-wrap.user { align-items: flex-end; }
+.msg {
+  max-width: 85%; padding: 8px 12px;
+  font-size: 12px; line-height: 1.55; border-radius: 13px;
+  animation: pop 0.2s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes pop {
+  from { opacity:0; transform: scale(0.92) translateY(4px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+.msg.bot {
+  background: white; color: var(--text);
+  border-bottom-left-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+.msg.user {
+  color: white; border-bottom-right-radius: 3px;
+  background: linear-gradient(135deg, var(--brand), var(--brand2));
+}
+.msg-time { font-size: 9.5px; color: #bbb; margin-top: 3px; padding: 0 2px; }
+.msg.escalation-card {
+  background: #fff8e1; border: 1px solid #fbbf24;
+  color: #92400e; border-radius: 10px; max-width: 100%;
+  font-size: 11.5px; text-align: center; padding: 10px 12px;
+}
+.suggestions { display: flex; flex-wrap: wrap; gap: 5px; }
+.sug-chip {
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid #e0e0e0; background: white;
+  font-size: 10.5px; color: var(--brand); cursor: pointer;
+  font-family: inherit; transition: all 0.15s;
+}
+.sug-chip:hover { background: var(--brand); color: white; border-color: var(--brand); }
+.typing {
+  display: flex; align-items: center; gap: 3px; padding: 8px 12px;
+  background: white; border-radius: 13px; border-bottom-left-radius: 3px;
+  width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+.typing span {
+  width: 5px; height: 5px; background: #c0c0c0; border-radius: 50%;
+  animation: blink 1.2s infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink {
+  0%,80%,100% { transform: translateY(0); opacity: 0.5; }
+  40%         { transform: translateY(-4px); opacity: 1; }
+}
+#powered-bar {
+  font-size: 10px; color: #bbb; text-align: center;
+  padding: 5px; background: #f8f9fb;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  flex-shrink: 0;
+}
+#powered-bar strong { color: var(--brand); }
+#input-area {
+  padding: 10px 12px; background: white; border-top: 1px solid #eee;
+  display: flex; gap: 7px; align-items: flex-end; flex-shrink: 0;
+}
+#user-input {
+  flex: 1; border: 1.5px solid var(--border); border-radius: 18px;
+  padding: 7px 12px; font-size: 12px; outline: none;
+  resize: none; max-height: 60px; font-family: inherit;
+  background: var(--bg); transition: border-color 0.2s;
+}
+#user-input:focus { border-color: var(--brand); background: white; }
+#send-btn {
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: linear-gradient(135deg, var(--brand), var(--brand2));
+  color: white; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s;
+}
+#send-btn:hover  { transform: scale(1.08); }
+#send-btn:active { transform: scale(0.93); }
+#send-btn:disabled { opacity: 0.4; transform: none; cursor: not-allowed; }
+#toggle-wrap { position: relative; }
+#chat-toggle {
+  width: 50px; height: 50px; border-radius: 50%; border: none;
+  background: linear-gradient(135deg, var(--brand), var(--brand2));
+  color: white; font-size: 21px; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(102,126,234,0.45);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#chat-toggle:hover { transform: scale(1.1); }
+#notif-badge {
+  position: absolute; top: -2px; right: -2px;
+  width: 17px; height: 17px; background: #ef4444;
+  border-radius: 50%; font-size: 9px; font-weight: bold; color: white;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 2px white; animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 2px white; }
+  50%      { box-shadow: 0 0 0 5px rgba(239,68,68,0.2), 0 0 0 2px white; }
+}
+#notif-badge.hidden { display: none; }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center; padding: 30px 20px 40px;
+  color: var(--muted); font-size: 12px;
+  border-top: 1px solid var(--border); background: white;
+}
+footer strong { color: var(--text); }
+footer a { color: var(--brand); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-icon">⚡</div>
+    NexaDesk
+    <span class="nav-badge">AI Support Platform</span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-credit">Built by <strong>Tiana Kayemba</strong></span>
+    <button class="btn-primary"
+      onclick="document.querySelector('.demo-section').scrollIntoView({behavior:'smooth'})">
+      Try the Demo →
+    </button>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section style="padding: 0 20px;">
+  <div class="hero">
+    <div class="hero-tag">✨ AI-Powered · White-Label · One Script to Deploy</div>
+    <h1>Customer Support That Answers Itself</h1>
+    <p>
+      NexaDesk is an embeddable AI support widget that answers questions from your
+      knowledge base, knows when to hand off to a human agent, and logs every
+      conversation. Drop one script tag onto any website and it's live.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-primary"
+        onclick="document.querySelector('.demo-section').scrollIntoView({behavior:'smooth'})">
+        ⚡ See Live Demo
+      </button>
+      <button class="btn-outline">View Source Code</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHAT IT DOES ── -->
+<div style="padding: 0 20px;">
+  <div class="what-strip">
+    <div class="what-item">
+      <div class="what-icon">🧠</div>
+      <h4>Answers from your KB</h4>
+      <p>Responds using your own FAQs, policies, and docs — not generic AI.</p>
+    </div>
+    <div class="what-item">
+      <div class="what-icon">🔁</div>
+      <h4>Escalates to humans</h4>
+      <p>Detects when a human is needed and hands off cleanly every time.</p>
+    </div>
+    <div class="what-item">
+      <div class="what-icon">📋</div>
+      <h4>Logs everything</h4>
+      <p>Every conversation is stored so you can review, audit, and improve.</p>
+    </div>
+    <div class="what-item">
+      <div class="what-icon">🎨</div>
+      <h4>Fully white-label</h4>
+      <p>Your colours, logo, and bot name. Looks built for your brand.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── FEATURES ── -->
+<section class="features-section" style="margin-top: 64px;">
+  <div class="section-label">What's Included</div>
+  <h2 class="section-title">Everything in the box</h2>
+  <p class="section-sub">
+    Built as a complete, deployable system — backend, widget, logging, and escalation
+    all wired together out of the box.
+  </p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#eef2ff">🧠</div>
+      <h3>Knowledge Base Answers</h3>
+      <p>The bot searches your custom knowledge base before every reply, so answers are always grounded in your content — not hallucinated. Easy to update as your product evolves.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#fef3c7">🔁</div>
+      <h3>Intelligent Escalation</h3>
+      <p>Detects frustration, billing disputes, security concerns, and direct requests for a human. Hands off cleanly with full conversation context so your agent is never starting from scratch.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#ecfdf5">📋</div>
+      <h3>Conversation Logging</h3>
+      <p>Every message is stored with timestamps and escalation flags. Review what customers ask most, spot gaps in your knowledge base, and audit any conversation.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#fff1f2">🎨</div>
+      <h3>Full White-Label</h3>
+      <p>Your colours, your logo, your bot name — configurable without touching code. The widget adapts to any brand and fits visually on any website.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#f5f3ff">⚡</div>
+      <h3>One-Line Deployment</h3>
+      <p>One script tag is all a client adds to their site. Works on any website — WordPress, Webflow, Shopify, plain HTML. No framework or build step required.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#eff6ff">📊</div>
+      <h3>Admin Log Endpoint</h3>
+      <p>A built-in API endpoint exposes all conversation summaries for review. Extendable into a full dashboard — filter by date, escalation status, or topic.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── LIVE DEMO ── -->
+<section class="demo-section">
+  <div class="section-label">Interactive Demo</div>
+  <h2 class="section-title">Make it yours — right now</h2>
+  <p class="section-sub">
+    Enter your company details and watch the widget update in real time.<br>
+    Use the buttons inside the preview to test different conversation flows.
+  </p>
+
+  <div class="demo-layout">
+
+    <!-- Customizer -->
+    <div class="customizer">
+      <div class="customizer-header">
+        <h3>🎨 Brand Customizer</h3>
+        <p>Changes apply instantly to the preview →</p>
+      </div>
+      <div class="customizer-body">
+
+        <div>
+          <label class="field-label" for="c-company">Company Name</label>
+          <input class="field-input" id="c-company" value="AcmeSoft"
+                 placeholder="Your Company" oninput="applyCustomization()"/>
+        </div>
+
+        <div>
+          <label class="field-label" for="c-botname">Bot Name</label>
+          <input class="field-input" id="c-botname" value="AcmeSoft Support"
+                 placeholder="e.g. Aria, Support Bot" oninput="applyCustomization()"/>
+        </div>
+
+        <div>
+          <label class="field-label">Company Logo</label>
+          <div class="logo-upload-area">
+            <input type="file" accept="image/*" id="logo-file-input"
+                   onchange="handleLogo(this)"/>
+            <div id="logo-default-prompt">
+              <div class="upload-icon">🖼️</div>
+              <p><strong>Click to upload</strong> your logo<br>PNG, SVG, JPG</p>
+            </div>
+            <div id="logo-preview-wrap">
+              <img id="logo-preview" src="" alt="Logo"/>
+              <button class="remove-logo" onclick="removeLogo(event)">✕ Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label">Brand Colour</label>
+          <div class="color-presets" id="color-presets">
+            <div class="color-preset active"
+                 style="background:linear-gradient(135deg,#667eea,#764ba2)"
+                 data-c1="#667eea" data-c2="#764ba2" onclick="setPreset(this)"></div>
+            <div class="color-preset"
+                 style="background:linear-gradient(135deg,#06b6d4,#0284c7)"
+                 data-c1="#06b6d4" data-c2="#0284c7" onclick="setPreset(this)"></div>
+            <div class="color-preset"
+                 style="background:linear-gradient(135deg,#10b981,#059669)"
+                 data-c1="#10b981" data-c2="#059669" onclick="setPreset(this)"></div>
+            <div class="color-preset"
+                 style="background:linear-gradient(135deg,#f59e0b,#d97706)"
+                 data-c1="#f59e0b" data-c2="#d97706" onclick="setPreset(this)"></div>
+            <div class="color-preset"
+                 style="background:linear-gradient(135deg,#ef4444,#dc2626)"
+                 data-c1="#ef4444" data-c2="#dc2626" onclick="setPreset(this)"></div>
+            <div class="color-preset"
+                 style="background:linear-gradient(135deg,#1a1a2e,#16213e)"
+                 data-c1="#1a1a2e" data-c2="#16213e" onclick="setPreset(this)"></div>
+          </div>
+          <div class="color-row">
+            <input type="color" id="c-color1" value="#667eea"
+                   oninput="applyCustomization(); clearPresets()"/>
+            <span>→</span>
+            <input type="color" id="c-color2" value="#764ba2"
+                   oninput="applyCustomization(); clearPresets()"/>
+            <span>Custom gradient</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label">Options</label>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="toggle-row">
+              <span>Show "Powered by NexaDesk"</span>
+              <label class="toggle">
+                <input type="checkbox" id="t-powered" checked onchange="applyCustomization()"/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <span>Show suggestion chips</span>
+              <label class="toggle">
+                <input type="checkbox" id="t-chips" checked onchange="applyCustomization()"/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="demo-preview">
+      <div class="preview-label">Live Preview</div>
+
+      <div class="preview-site-bg">
+        <div class="site-icon">🏢</div>
+        <h2 id="preview-site-name">AcmeSoft</h2>
+        <p>Your website content goes here</p>
+      </div>
+
+      <!-- Widget -->
+      <div id="widget-container">
+        <div id="chat-window" class="hidden">
+          <div id="chat-header">
+            <div class="hdr-info">
+              <div class="hdr-avatar" id="hdr-avatar">🤖</div>
+              <div class="hdr-text">
+                <h4 id="hdr-title">AcmeSoft Support</h4>
+                <p><span class="hdr-dot"></span>Online · Replies instantly</p>
+              </div>
+            </div>
+            <button class="hdr-close" id="hdr-close">×</button>
+          </div>
+
+          <div id="messages"></div>
+
+          <div id="input-area">
+            <textarea id="user-input" placeholder="Type your message…" rows="1"></textarea>
+            <button id="send-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+
+          <div id="powered-bar">
+            ⚡ Powered by <strong>NexaDesk</strong> · Built by <strong>Tiana Kayemba</strong>
+          </div>
+        </div>
+
+        <div id="toggle-wrap">
+          <button id="chat-toggle">💬</button>
+          <div id="notif-badge" class="hidden">1</div>
+        </div>
+      </div>
+
+      <!-- Quick try buttons -->
+      <div class="quick-replies-bar">
+        <button class="qr-btn" onclick="simulateUser('How do I cancel my subscription?')">💳 Billing</button>
+        <button class="qr-btn" onclick="simulateUser('I forgot my password')">🔑 Password</button>
+        <button class="qr-btn" onclick="simulateUser('How do I add team members?')">👥 Team</button>
+        <button class="qr-btn danger" onclick="simulateUser('I am really frustrated and need a real person!')">🔥 Escalate</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>NexaDesk — AI Customer Support Platform &nbsp;|&nbsp;
+     Designed &amp; built by <strong>Tiana Kayemba</strong></p>
+  <p style="margin-top:6px">
+    Powered by <a href="https://anthropic.com" target="_blank">Anthropic Claude</a>
+    · Available for client projects &amp; white-label licensing
+  </p>
+</footer>
+
+<script>
+// ── Config ──
+const BACKEND = 'http://localhost:3001';
+
+// ── State ──
+let conversationId = null;
+let isEscalated    = false;
+let supportEmail   = null;
+let logoDataUrl    = null;
+let isOpen         = false;
+let showChips      = true;
+
+// ── DOM ──
+const chatWin   = document.getElementById('chat-window');
+const msgsEl    = document.getElementById('messages');
+const inputEl   = document.getElementById('user-input');
+const sendBtn   = document.getElementById('send-btn');
+const toggleBtn = document.getElementById('chat-toggle');
+const hdrClose  = document.getElementById('hdr-close');
+const badge     = document.getElementById('notif-badge');
+
+// ── Open / Close ──
+toggleBtn.addEventListener('click', async () => {
+  chatWin.classList.remove('hidden');
+  badge.classList.add('hidden');
+  toggleBtn.style.display = 'none';
+  isOpen = true;
+  if (!conversationId) await startConversation();
+});
+
+hdrClose.addEventListener('click', () => {
+  chatWin.classList.add('hidden');
+  toggleBtn.style.display = 'flex';
+  isOpen = false;
+});
+
+// ── Start conversation ──
+async function startConversation() {
+  try {
+    const res  = await fetch(`${BACKEND}/chat/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userInfo: { page: window.location.href } })
+    });
+    const data = await res.json();
+    conversationId = data.conversationId;
+    supportEmail   = data.supportEmail;
+    addMsg('bot', data.greeting);
+    if (showChips) addSuggestions();
+  } catch {
+    addMsg('bot', "Hi! 👋 Having a little trouble connecting — make sure the backend is running.");
+  }
+}
+
+// ── Send message ──
+async function sendMessage(text) {
+  const msg = (text || inputEl.value).trim();
+  if (!msg || !conversationId) return;
+  inputEl.value = ''; inputEl.style.height = 'auto';
+  sendBtn.disabled = true;
+  addMsg('user', msg);
+  showTyping();
+  try {
+    const res  = await fetch(`${BACKEND}/chat/message`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ conversationId, message: msg })
+    });
+    const data = await res.json();
+    removeTyping();
+    addMsg('bot', data.reply || data.error);
+    if (data.shouldEscalate && !isEscalated) {
+      isEscalated = true;
+      setTimeout(addEscalationCard, 350);
+    }
+  } catch {
+    removeTyping();
+    addMsg('bot', 'Sorry, something went wrong. Please try again.');
+  }
+  sendBtn.disabled = false;
+  inputEl.focus();
+}
+
+function simulateUser(text) {
+  if (!isOpen) {
+    chatWin.classList.remove('hidden');
+    badge.classList.add('hidden');
+    toggleBtn.style.display = 'none';
+    isOpen = true;
+    if (!conversationId) {
+      startConversation().then(() => setTimeout(() => sendMessage(text), 400));
+      return;
+    }
+  }
+  sendMessage(text);
+}
+
+// ── UI helpers ──
+function addMsg(role, html) {
+  const time   = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+  const wrap   = document.createElement('div');
+  wrap.className = `msg-wrap ${role}`;
+  const bubble = document.createElement('div');
+  bubble.className = `msg ${role}`;
+  // Render markdown bold and line breaks
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\n- /g, '<br>• ');
+  html = html.replace(/\n/g, '<br>');
+  bubble.innerHTML = html;
+  const ts = document.createElement('div');
+  ts.className = 'msg-time'; ts.textContent = time;
+  wrap.appendChild(bubble); wrap.appendChild(ts);
+  msgsEl.appendChild(wrap);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function addEscalationCard() {
+  const div = document.createElement('div');
+  div.className = 'msg escalation-card';
+  div.innerHTML = `⚡ <strong>Connecting you to a human agent</strong><br>
+    Estimated wait: ~5 min · ${supportEmail || 'contact our support team'}`;
+  msgsEl.appendChild(div);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function addSuggestions() {
+  const wrap  = document.createElement('div');
+  wrap.className = 'msg-wrap bot';
+  const chips = document.createElement('div');
+  chips.className = 'suggestions';
+  ['Cancel subscription','Reset password','Add team member','Billing info']
+    .forEach(label => {
+      const btn = document.createElement('button');
+      btn.className = 'sug-chip'; btn.textContent = label;
+      btn.onclick = () => { wrap.remove(); sendMessage(label); };
+      chips.appendChild(btn);
+    });
+  wrap.appendChild(chips);
+  msgsEl.appendChild(wrap);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function showTyping() {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap bot'; wrap.id = 'typing-wrap';
+  const t = document.createElement('div');
+  t.className = 'typing';
+  t.innerHTML = '<span></span><span></span><span></span>';
+  wrap.appendChild(t); msgsEl.appendChild(wrap);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+function removeTyping() {
+  const el = document.getElementById('typing-wrap');
+  if (el) el.remove();
+}
+
+sendBtn.addEventListener('click', () => sendMessage());
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+inputEl.addEventListener('input', () => {
+  inputEl.style.height = 'auto';
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 60) + 'px';
+});
+
+setTimeout(() => { if (!isOpen) badge.classList.remove('hidden'); }, 2000);
+
+// ── Customizer ──
+function applyCustomization() {
+  const company = document.getElementById('c-company').value || 'Support';
+  const botName = document.getElementById('c-botname').value || 'Support Bot';
+  const c1      = document.getElementById('c-color1').value;
+  const c2      = document.getElementById('c-color2').value;
+  const powered = document.getElementById('t-powered').checked;
+  showChips     = document.getElementById('t-chips').checked;
+
+  document.documentElement.style.setProperty('--brand',  c1);
+  document.documentElement.style.setProperty('--brand2', c2);
+  document.documentElement.style.setProperty('--brand-light', c1 + '18');
+
+  document.getElementById('chat-header').style.background =
+    `linear-gradient(135deg, ${c1}, ${c2})`;
+  document.getElementById('chat-toggle').style.background =
+    `linear-gradient(135deg, ${c1}, ${c2})`;
+
+  document.getElementById('hdr-title').textContent        = botName;
+  document.getElementById('preview-site-name').textContent = company;
+  document.getElementById('powered-bar').style.display    = powered ? 'flex' : 'none';
+
+  const avatarEl = document.getElementById('hdr-avatar');
+  avatarEl.innerHTML = logoDataUrl
+    ? `<img src="${logoDataUrl}" alt="logo"/>`
+    : '🤖';
+}
+
+function setPreset(el) {
+  clearPresets();
+  el.classList.add('active');
+  document.getElementById('c-color1').value = el.dataset.c1;
+  document.getElementById('c-color2').value = el.dataset.c2;
+  applyCustomization();
+}
+
+function clearPresets() {
+  document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('active'));
+}
+
+function handleLogo(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    logoDataUrl = e.target.result;
+    document.getElementById('logo-preview').src              = logoDataUrl;
+    document.getElementById('logo-default-prompt').style.display = 'none';
+    document.getElementById('logo-preview-wrap').style.display   = 'flex';
+    applyCustomization();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeLogo(e) {
+  e.stopPropagation();
+  logoDataUrl = null;
+  document.getElementById('logo-file-input').value              = '';
+  document.getElementById('logo-default-prompt').style.display  = 'block';
+  document.getElementById('logo-preview-wrap').style.display    = 'none';
+  applyCustomization();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+{
+    "company": "AcmeSoft",
+    "supportEmail": "support@acmesoft.com",
+    "topics": [
+        {
+            "id": "billing-001",
+            "category": "Billing",
+            "question": "How do I cancel my subscription?",
+            "answer": "You can cancel your subscription at any time by going to Settings > Billing > Cancel Subscription. Your access continues until the end of your current billing period. No refunds are issued for partial months.",
+            "keywords": ["cancel", "subscription", "refund", "billing", "stop paying"]
+        },
+        {
+            "id": "billing-002",
+            "catgeory": "Billing",
+            "question": "What payment methods do you accept?",
+            "answer": "We accept all major credit cards (Visa, Mastercard, Amex), PayPal, and bank transfers for annual plans over $500.",
+            "keywords": ["payemnt", "credit card", "visa", "paypal", "pay", "invoice"]
+        },
+        {
+            "id": "technical-001",
+            "category": "Technical",
+            "question": "Why is my data not syncing?",
+            "answer": "Sync issues are usually caused by: (1) Being offline - check your internet conntection. (2) An outdated app - update to the latest version. (3) A cache issue - try logging out and back in. If none of these work, contact support.",
+            "keywords": ["sync", "syncing", "data", "not updating", "refresh"]
+        },
+        {
+            "id": "technical-002",
+            "category": "Technical",
+            "question": "How do I reset my password?",
+            "answer": "Click 'Forgot password' on the login page and enter your email. You'll recieve a reset link within 2 minutes. Check your spam folder if you don't see it.",
+            "keywords": ["password", "reset", "forgot", "login", "access", "locked out"]
+        },
+        {
+            "id": "account-001",
+            "category": "Account",
+            "question": "How do I add team members?",
+            "asnwer": "Go to settings > Team > Invite Mmembers. Enter their email addresses and assign a role (Admin, Editor, or Viewer). They'll recieve an invitation email.",
+            "keywords": ["team", "invite", "add user", "member", "colleague", "share"]
+        },
+        {
+            "id": "escalation-trigger",
+            "category": "Escalation",
+            "question": "Situations that require a human agent",
+            "answer": "Always escalate to a human when: the user is upset of frustrated, the issue involves a billing dispute over $50, the user has the same problem more than once, account security is compromised, or the use explicitly asks for a human.",
+            "keywords": ["angry", "upset", "frustrated", "speak to human", "real person", "agent", "dispute"]
+        }
+    ]
+}
