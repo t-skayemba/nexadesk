@@ -1,102 +1,124 @@
-const Database = require('better-sqlite3');
-const path = require('path');
+require('dotenv').config();
+const { Pool } = require('pg');
 
-// create (or open) the SQLLite database file
-const db = new Database(path.join(__dirname, 'conversations.db'));
+// ---------------------------------------------------------
+// DATABASE CONNECTION
+// Uses DATABASE_URL from enviornment variables.
+// ---------------------------------------------------------
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production'
+        ? { rejectUnauthorized: false }
+        : false
+});
 
-// create tables if they don't exist yet
-db.exec(`
-  CREATE TABLE IF NOT EXISTS conversations (
-    id TEXT PRIMARY KEY,
-    started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    ended_at DATETIME,
-    was_escalated INTEGER DEFAULT 0,
-    escalation_reason TEXT,
-    user_info TEXT
-  );
+// ---------------------------------------------------------
+// INITIALISE TABLES
+// creates tables if they don't exist yet
+// runs once server starts
+// ---------------------------------------------------------
+async function initDB() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS conversations (
+            id TEXT PRIMARY KEY,
+            started_at TIMESTAMPTZ DEFAULT NOW(),
+            ended_at TIMESTAMPTZ,
+            was_escalated BOOLEAN DEFAULT FALSE,
+            escalation_reason TEXT,
+            user_info JSONB
+        );
+        
+        CREATE TABLE IF NOT EXISTS messages (
+            id SERIAL PRIMARY KEY,
+            conversation_id TEXT REFERENCES conversations(id),
+            role TEXT,
+            content TEXT,
+            timestamp TIMESTAMPTZ DEFAULT NOW()
+        );
+    `);
+    console.log('✅ Database tables ready');
+}
 
-  CREATE TABLE IF NOT EXISTS messages (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    conversation_id TEXT,
-    role TEXT,
-    content TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (conversation_id) REFERENCES conversations(id)
-  );
-`);
+// call on startup
+initDB().catch(err => {
+    console.error('❌ Failed to initialise database:', err.message);
+});
 
-/**
- * Start a new conversation and return its ID
- */
-
-function startConversation(conversationId, userInfo = {}) {
-    const stmt = db.prepare(
-        'INSERT INTO conversations (id, user_info) VALUES (?, ?)'
+// ---------------------------------------------------------
+// START A CONVERSATION
+// ---------------------------------------------------------
+async function startConversation(conversationId, userInfo = {}) {
+    await pool.query(
+        'INSERT INTO conversations (id, user_info) VALUES ($1, $2)',
+        [conversationId, JSON.stringify(userInfo)]
     );
-    stmt.run(conversationId, JSON.stringify(userInfo));
     return conversationId;
 }
 
-/**
- * Log a single message (role = 'user' or 'assistant') 
- */
-function logMessage(conversationId, role, content) {
-    const stmt = db.prepare(
-        'INSERT INTO messages (conversation_id, role, content) VALUES (?, ?, ?)'
+// ---------------------------------------------------------
+// LOG A MESSAGE
+// role = 'user' or 'assistant'
+// ---------------------------------------------------------
+async function logMessage(conversationId, role, content) {
+    await pool.query(
+        'INSERT INTO messages (conversation_id, role, content) VALUES ($1, $2, $3)',
+        [conversationId, role, content]
     );
-    stmt.run(conversationId, role, content);
 }
 
-/**
- * Mark a conversation as escalated to a human
- */
-
-function markEscalated(conversationId, reason) {
-    const stmt = db.prepare(
-        'UPDATE conversations SET was_escalated = 1, escalation_reason = ? WHERE id = ?'
+// ---------------------------------------------------------
+// MARK A CONVERSATION AS ESCALATED
+// ---------------------------------------------------------
+async function markEscalated(conversationId, reason) {
+    await pool.query(
+        'UPDATE conversations SET was_escalated = TRUE, escalation_reason = $1 WHERE id = $2',
+        [reason, conversationId]
     );
-    stmt.run(reason, conversationId);
 }
 
-/**
- * Close a conversation
- */
-
-function endConversation(conversationId) {
-    const stmt = db.prepare(
-        'UPDATE conversations SET ended_at = CURRENT_TIMESTAMP WHERE id = ?'
+// ---------------------------------------------------------
+// END A CONVERSATION
+// ---------------------------------------------------------
+async function endConversation(conversationId) {
+    await pool.query(
+        'UPDATE conversations SET ended_at = NOW() WHERE id = $1',
+        [conversationId]
     );
-    stmt.run(conversationId);
 }
 
-/**
- * Get all messages for a conversation (for passing history to Claude)
- */
-function getConversationHistory(conversationId) {
-    const stmt = db.prepare(
-        'SELECT role, content FROM messages WHERE conversation_id = ? ORDER BY timestamp ASC'
+// ---------------------------------------------------------
+// GET CONVERSATION HISTORY
+// returns all messages for a conversation in order
+// used to pass history to Claude on every request
+// ---------------------------------------------------------
+async function getConversationHistory(conversationId) {
+    const result = await pool.query(
+        'SELECT role, content FROM messages WHERE conversation_id = $1 ORDER BY timestamp ASC',
+        [conversationId]
     );
-    return stmt.all(conversationId);
+    return result.rows;
 }
 
-/**
- * Get a summary of all conversations (for a dashboard later)
- */
-function getConversationSummaries() {
-    return db.prepare(`
+// ---------------------------------------------------------
+// GET CONVERSATION SUMMARIES
+// returns the last 50 conversations for the admin endpoint
+// ---------------------------------------------------------
+async function getConversationSummaries() {
+    const result = await pool.query(`
         SELECT
             c.id,
             c.started_at,
             c.ended_at,
             c.was_escalated,
             c.escalation_reason,
-            COUNT(m.id) as message_count
+            COUNT(m.id) AS message_count
         FROM conversations c
         LEFT JOIN messages m ON m.conversation_id = c.id
         GROUP BY c.id
         ORDER BY c.started_at DESC
         LIMIT 50
-    `).all();
+    `);
+    return result.rows;
 }
 
 module.exports = {
