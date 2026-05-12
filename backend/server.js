@@ -51,13 +51,13 @@ function requireAdminKey(req, res, next) {
 // ─────────────────────────────────────────────
 // POST /chat/start
 // ─────────────────────────────────────────────
-app.post('/chat/start', (req, res) => {
+app.post('/chat/start', async (req, res) => {
   const conversationId = uuidv4();
   const userInfo       = req.body.userInfo || {};
   const company        = getCompanyName();
   const supportEmail   = getSupportEmail();
 
-  logger.startConversation(conversationId, userInfo);
+  await logger.startConversation(conversationId, userInfo);
 
   res.json({
     conversationId,
@@ -79,7 +79,7 @@ app.post('/chat/message', async (req, res) => {
   try {
     logger.logMessage(conversationId, 'user', message);
 
-    const history         = logger.getConversationHistory(conversationId);
+    const history         = await logger.getConversationHistory(conversationId);
     const previousHistory = history.slice(0, -1);
 
     const { reply, shouldEscalate, escalationReason } = await getAIResponse(
@@ -122,10 +122,10 @@ app.post('/chat/message', async (req, res) => {
 // ─────────────────────────────────────────────
 // POST /chat/end
 // ─────────────────────────────────────────────
-app.post('/chat/end', (req, res) => {
+app.post('/chat/end', async (req, res) => {
   const { conversationId } = req.body;
   if (conversationId) {
-    logger.endConversation(conversationId);
+    await logger.endConversation(conversationId);
   }
   res.json({ success: true });
 });
