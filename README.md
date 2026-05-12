@@ -16,7 +16,7 @@ Drop NexaDesk onto any website and it will:
 - **Answer from your knowledge base** — questions are matched against your custom FAQ and policy content, so answers are always grounded in your actual documentation, not generic AI responses
 - **Know when to escalate** — detects frustration, billing disputes, security concerns, and direct requests for a human agent, then hands off cleanly with full conversation context attached
 - **Try to resolve before escalating** — if a user casually asks for a human, the bot offers to help first and only escalates if they insist or the issue genuinely requires it
-- **Log every conversation** — all messages are stored with timestamps, escalation flags, and session IDs for review and auditing
+- **Log every conversation** — all messages are stored in PostgreSQL with timestamps, escalation flags, and session IDs for review and auditing
 - **Notify your support team** — when a customer escalates, your team is alerted instantly via Slack, email, or both, with the full transcript attached
 - **Adapt to any brand** — colours, logo, and bot name are fully configurable without touching code
 - **Deploy with one script tag** — clients add one line to their website. Works on WordPress, Webflow, Shopify, or plain HTML — no framework or build step required on their end
@@ -27,9 +27,9 @@ Drop NexaDesk onto any website and it will:
 
 | Layer | Technology |
 |---|---|
-| AI | Anthropic Claude API (claude-sonnet-4-6) |
+| AI | Anthropic Claude API (claude-sonnet-4-5) |
 | Backend | Node.js, Express |
-| Database | SQLite (via better-sqlite3) |
+| Database | PostgreSQL (via pg, hosted on Railway) |
 | Knowledge Base | JSON + full-context Claude injection |
 | Frontend | Vanilla HTML, CSS, JavaScript |
 | Notifications | Nodemailer (email) + Slack Webhooks |
@@ -63,17 +63,18 @@ cd backend
 npm install
 ```
 
-### 3. Set your API key
+### 3. Set your environment variables
 ```bash
 cp .env.example .env
 ```
-Open `.env` and add your Anthropic API key:
+Open `.env` and fill in your values:
 ```
 ANTHROPIC_API_KEY=your_api_key_here
 ADMIN_SECRET_KEY=any-long-random-string
+DATABASE_URL=postgresql://user:password@host:5432/dbname
 PORT=3001
 ```
-Get an API key at [console.anthropic.com](https://console.anthropic.com)
+Get an Anthropic API key at [console.anthropic.com](https://console.anthropic.com)
 
 ### 4. Start the backend
 ```bash
@@ -128,7 +129,7 @@ nexadesk/
 │   ├── server.js              # Express server, API routes, embed script serving
 │   ├── aiHandler.js           # Claude AI integration and system prompt
 │   ├── knowledgeBase.js       # Knowledge base loader
-│   ├── logger.js              # SQLite conversation logger
+│   ├── logger.js              # PostgreSQL conversation logger
 │   ├── notifier.js            # Slack and email escalation notifications
 │   ├── knowledgeBase.json     # Knowledge base content (customised per client)
 │   ├── .env.example           # Environment variable template
@@ -148,7 +149,7 @@ nexadesk/
 
 | What | Where |
 |---|---|
-| Conversation logs | Stored in `backend/conversations.db` |
+| Conversation logs | Stored in PostgreSQL on Railway |
 | Knowledge base | Stored in `backend/knowledgeBase.json` |
 | Message processing | Sent to Anthropic's API to generate responses |
 
@@ -160,7 +161,7 @@ Conversation content is sent to Anthropic's API for answer generation. See [Anth
 
 Want NexaDesk running on your website with your knowledge base, your branding, and your support team connected?
 
-📩 **[tskayemba@gmail.com](mailto:tskayemba@gmail.com)**
+📩 **[tiana@tianakayemba.dev](mailto:tiana@tianakayemba.dev)**
 
 ---
 
